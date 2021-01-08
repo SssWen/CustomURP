@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 /// <summary>
 /// 每个相机单独渲染，为了方便扩展使用，比如人物相机，地图相机，forward rendering, deferred rendering;
 /// </summary>
-public class CameraRenderer
+public partial class CameraRenderer
 {
     const string bufferName = "Render Camera";
     static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
@@ -23,6 +23,7 @@ public class CameraRenderer
     {
         this.context = context;
         this.camera = camera;
+        PrepareForSceneWindow(); // 渲染UI
         // 剔除相机外的物体
         if (!Cull())
         {
@@ -30,7 +31,9 @@ public class CameraRenderer
         }
 
         Setup();
-        DrawVisibleGeometry();
+        DrawVisibleGeometry(); // 渲染可物体
+        DrawUnsupportedShaders(); // 渲染报错物体
+        DrawGizmos();
         Submit();
     }
     /// <summary>
@@ -100,5 +103,6 @@ public class CameraRenderer
         }
         return false;
     }
+
 
 }
