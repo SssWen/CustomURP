@@ -16,7 +16,7 @@ partial class CameraRenderer {
         new ShaderTagId("PrepassBase"),
         new ShaderTagId("Vertex"),
         new ShaderTagId("VertexLMRGBM"),
-        new ShaderTagId("VertexLM")
+        new ShaderTagId("VertexLM") // 老版本 lightmap pass
     };
 
     static Material errorMaterial;
@@ -35,10 +35,15 @@ partial class CameraRenderer {
     /// </summary>
     partial void DrawUnsupportedShaders()
     {
-        var drawingSettings = new DrawingSettings(
-            legacyShaderTagIds[0], new SortingSettings(camera)
-        );
-        // 渲染多个pass设置
+        if (errorMaterial == null)
+        {
+            errorMaterial = new Material(Shader.Find("Hidden/InternalErrorShader"));
+        }
+        // 渲染多个pass设置,如何遇到老版本shader，替换成errorShader
+        var drawingSettings = new DrawingSettings(legacyShaderTagIds[0], new SortingSettings(camera)){ overrideMaterial = errorMaterial };
+        // 这里不替换
+//        var drawingSettings = new DrawingSettings(legacyShaderTagIds[0], new SortingSettings(camera));
+        
         for (int i = 1; i < legacyShaderTagIds.Length; i++)
         {
             drawingSettings.SetShaderPassName(i, legacyShaderTagIds[i]);
